@@ -268,7 +268,10 @@ public abstract class ControlsFragment extends Fragment implements ServerListene
           getActivity().runOnUiThread(() -> handleControllerEvent(event));
         },
         error -> Timber.e(error, "ControllerToBotEventBus error in %s", getClass().getSimpleName()),
-        event -> event.has("command") || event.has("driveCmd") || event.has("server"));
+            event -> event.has("command")
+                    || event.has("driveCmd")
+                    || event.has("missionCmd")
+                    || event.has("server"));
   }
 
   private void handleControllerEvent(JSONObject event) {
@@ -279,6 +282,7 @@ public abstract class ControlsFragment extends Fragment implements ServerListene
       }
 
       String commandType = resolveCommandType(event);
+      lastControllerEvent = event;
       if (commandType == null) {
         return;
       }
@@ -290,6 +294,18 @@ public abstract class ControlsFragment extends Fragment implements ServerListene
         case Constants.CMD_DRIVE:
           applyDriveCommand(event.getJSONObject("driveCmd"));
           processControllerKeyData(Constants.CMD_DRIVE);
+          break;
+
+        case Constants.CMD_MISSION_START:
+          processControllerKeyData(Constants.CMD_MISSION_START);
+          break;
+
+        case Constants.CMD_MISSION_PAUSE:
+          processControllerKeyData(Constants.CMD_MISSION_PAUSE);
+          break;
+
+        case Constants.CMD_MISSION_STOP:
+          processControllerKeyData(Constants.CMD_MISSION_STOP);
           break;
 
         case Constants.CMD_NOISE:
@@ -339,6 +355,23 @@ public abstract class ControlsFragment extends Fragment implements ServerListene
     }
     if (event.has("driveCmd")) {
       return Constants.CMD_DRIVE;
+    }
+    if (event.has("missionCmd")) {
+      String action = event.getJSONObject("missionCmd").optString("action");
+
+      switch (action) {
+        case "START":
+          return Constants.CMD_MISSION_START;
+
+        case "PAUSE":
+          return Constants.CMD_MISSION_PAUSE;
+
+        case "STOP":
+          return Constants.CMD_MISSION_STOP;
+
+        default:
+          return null;
+      }
     }
     return null;
   }
@@ -606,6 +639,7 @@ public abstract class ControlsFragment extends Fragment implements ServerListene
   protected void setModel(Model model) {}
 
   protected abstract void processControllerKeyData(String command);
+  protected JSONObject lastControllerEvent;
 
   protected abstract void processUSBData(String data);
 }

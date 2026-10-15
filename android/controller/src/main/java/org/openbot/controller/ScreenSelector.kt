@@ -36,6 +36,11 @@ data class ScreenSelector (val binding: ActivityFullscreenBinding) {
         hideSliders()
     }
 
+    /** Returns from the manual drive screens (sliders or tilt) to the main controller menu. */
+    fun showMainMenu() {
+        showButtons()
+    }
+
     fun hideControls() {
         binding.mainScreen.hide()
         binding.splashScreen.show()

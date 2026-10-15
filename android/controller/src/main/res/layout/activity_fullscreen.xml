@@ -361,6 +361,15 @@
                     android:layout_height="wrap_content"
                     android:background="@drawable/button"
                     android:text="@string/Drive_mode" />
+
+                <Button
+                    android:id="@+id/autonomous_mission"
+                    style="@style/buttonStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/button"
+                    android:text="Autonomous Mission" />
+
             </LinearLayout>
 
             <RelativeLayout
